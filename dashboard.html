@@ -24,7 +24,6 @@
 <link rel="stylesheet" href="assets/css/paginas/assignment-hours.css?v=4">
 <link rel="stylesheet" href="assets/css/paginas/dashboard-admin-layout.css?v=1">
 <link rel="stylesheet" href="assets/css/paginas/dashboard-ranking.css?v=6">
-<link rel="stylesheet" href="assets/css/paginas/dashboard-facebook-report.css?v=9">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.js" defer></script>
 <link rel="stylesheet" href="assets/css/paginas/dashboard-pending.css?v=9">
@@ -70,7 +69,6 @@
 <link rel="stylesheet" href="assets/css/paginas/dashboard-attendance-preview.css?v=2">
 <link rel="stylesheet" href="assets/css/paginas/dashboard-sidebar-mobile.css?v=7">
 <link rel="stylesheet" href="assets/css/paginas/dashboard-operations.css?v=7">
-<link rel="stylesheet" href="assets/css/paginas/dashboard-facebook-studio.css?v=8">
 <link rel="stylesheet" href="assets/css/paginas/dashboard-holiday.css?v=2">
 <link rel="stylesheet" href="assets/css/paginas/dashboard-evidence-corrections.css?v=1">
 <link rel="stylesheet" href="assets/css/paginas/dashboard-overview-modal.css?v=2">
@@ -83,6 +81,7 @@
 <link rel="stylesheet" href="assets/css/paginas/dashboard-admin-lateral.css?v=3">
 <link rel="stylesheet" href="assets/css/paginas/dashboard-admin-resumen.css?v=3">
 <link rel="stylesheet" href="assets/css/paginas/dashboard-admin-seguimiento.css?v=3">
+<link rel="stylesheet" href="assets/css/paginas/dashboard-facebook-report.css?v=10">
 </head>
 <body>
 
@@ -2327,360 +2326,181 @@
         <a class="admin-legacy-link" href="asistencia.html?modo=horarios">Abrir Colaboradores en el panel anterior ↗</a>
       </section>
 
-      <section id="admin-facebook-section" class="fb-report-studio" hidden aria-labelledby="fb-report-title">
-        <header class="fb-report-head">
-          <div class="fb-report-title-box">
-            <div class="fb-report-badge-row">
-              <div class="fb-report-pill-badge">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                <span>Reporte Ejecutivo</span>
-              </div>
-              <p id="fb-report-status" class="fb-report-meta-chip fb-report-status-header" role="status" aria-live="polite"></p>
-            </div>
-            <h2 id="fb-report-title">Reportes de Facebook</h2>
-            <p>Reportes ejecutivos de publicaciones por persona y por área.</p>
-          </div>
-          <div class="fb-report-downloads">
-            <button type="button" id="fb-report-export" disabled title="Descarga el libro Excel con reporte por Área, por Persona y Matriz Diaria">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="vertical-align:middle;margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              <span>Descargar Excel</span>
-            </button>
-            <button type="button" id="fb-report-pdf" aria-describedby="fb-report-pdf-help" disabled>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="vertical-align:middle;margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-              <span>Descargar PDF completo</span>
-            </button>
-            <small id="fb-report-pdf-help">PDF: todas las áreas del período y ranking al final.</small>
-          </div>
-        </header>
-
-
-        <form id="fb-report-form" class="fb-report-filters">
-          <div class="fb-filter-col fb-filter-kind-col">
-            <label for="fb-report-kind" id="fb-report-kind-label">Reporte</label>
-            <div class="fb-select-box fb-custom-dropdown" id="fb-report-kind-select-box">
-              <select id="fb-report-kind" class="fb-native-select-hidden" aria-hidden="true" tabindex="-1">
-                <option value="lunes">Lunes · jueves a domingo</option>
-                <option value="jueves">Jueves · lunes a miércoles</option>
-                <option value="custom">Rango personalizado</option>
-              </select>
-              <button type="button" class="fb-custom-select-trigger" id="fb-report-kind-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="fb-report-kind-label fb-report-kind-display">
-                <span class="fb-custom-select-val" id="fb-report-kind-display">Lunes · jueves a domingo</span>
-                <svg class="fb-select-arrow" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-              </button>
-              <div class="fb-custom-dropdown-menu" id="fb-report-kind-menu" role="listbox" hidden>
-                <button type="button" class="fb-custom-dropdown-item active" data-value="lunes" role="option" aria-selected="true">
-                  <span class="fb-dropdown-item-badge fb-badge-blue">
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                  </span>
-                  <div class="fb-dropdown-item-info">
-                    <span class="fb-dropdown-item-title">Lunes · jueves a domingo</span>
-                    <span class="fb-dropdown-item-sub">Corte fin de semana anterior</span>
-                  </div>
-                  <svg class="fb-dropdown-check" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                </button>
-                <button type="button" class="fb-custom-dropdown-item" data-value="jueves" role="option" aria-selected="false">
-                  <span class="fb-dropdown-item-badge fb-badge-purple">
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                  </span>
-                  <div class="fb-dropdown-item-info">
-                    <span class="fb-dropdown-item-title">Jueves · lunes a miércoles</span>
-                    <span class="fb-dropdown-item-sub">Corte primera mitad de semana</span>
-                  </div>
-                  <svg class="fb-dropdown-check" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                </button>
-                <button type="button" class="fb-custom-dropdown-item" data-value="custom" role="option" aria-selected="false">
-                  <span class="fb-dropdown-item-badge fb-badge-coral">
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
-                  </span>
-                  <div class="fb-dropdown-item-info">
-                    <span class="fb-dropdown-item-title">Rango personalizado</span>
-                    <span class="fb-dropdown-item-sub">Fechas libres a tu medida (hasta 93d)</span>
-                  </div>
-                  <svg class="fb-dropdown-check" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="fb-filter-col" id="fb-report-reference-col">
-            <label id="fb-report-reference-label" for="fb-report-reference">Fecha del reporte</label>
-            <div class="fb-date-box">
-              <input type="date" id="fb-report-reference" required>
-              <button type="button" class="fb-cal-trigger" data-for="fb-report-reference" aria-label="Abrir calendario para Fecha del reporte" title="Seleccionar fecha en el calendario">
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              </button>
-            </div>
-          </div>
-
-          <div class="fb-filter-col" id="fb-report-from-col">
-            <label for="fb-report-from">Desde</label>
-            <div class="fb-date-box">
-              <input type="date" id="fb-report-from" required readonly>
-              <button type="button" class="fb-cal-trigger" data-for="fb-report-from" aria-label="Abrir calendario para Desde" title="Seleccionar fecha Desde">
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              </button>
-            </div>
-          </div>
-
-          <div class="fb-filter-col" id="fb-report-to-col">
-            <label for="fb-report-to">Hasta</label>
-            <div class="fb-date-box">
-              <input type="date" id="fb-report-to" required readonly>
-              <button type="button" class="fb-cal-trigger" data-for="fb-report-to" aria-label="Abrir calendario para Hasta" title="Seleccionar fecha Hasta">
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              </button>
-            </div>
-          </div>
-
-          <div class="fb-filter-action">
-            <button type="submit" id="fb-report-submit" class="fb-submit-btn">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-              <span>Consultar reporte</span>
-            </button>
-          </div>
-        </form>
-
-        <!-- Popover de calendario interactivo estilo Fitness Dashboard -->
-        <div id="fb-calendar-popover" class="fb-calendar-popover" hidden aria-modal="true" role="dialog" aria-label="Seleccionar fecha">
-          <div class="fb-cal-card">
-            <div class="fb-cal-header">
-              <button type="button" class="fb-cal-nav-btn" id="fb-cal-prev" aria-label="Mes anterior">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
-              </button>
-              <span class="fb-cal-title" id="fb-cal-month-year">Octubre, 2026</span>
-              <button type="button" class="fb-cal-nav-btn" id="fb-cal-next" aria-label="Mes siguiente">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-              </button>
-            </div>
-            <div class="fb-cal-weekdays" aria-hidden="true">
-              <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
-            </div>
-            <div class="fb-cal-days" id="fb-cal-days-grid"></div>
-            <div class="fb-cal-footer">
-              <button type="button" class="fb-cal-quick-btn" id="fb-cal-today-btn">Hoy</button>
-              <button type="button" class="fb-cal-close-btn" id="fb-cal-close-btn">Cerrar</button>
-            </div>
+      <section id="admin-facebook-section" class="fbr" hidden aria-labelledby="fb-report-title">
+        <!-- Barra compacta: aparece al desplazarse para no perder el período ni el área -->
+        <div class="fbr-sticky" id="fb-report-sticky">
+          <div class="fbr-sticky-bar" aria-hidden="true">
+            <span class="fbr-sticky-title"><span class="fbr-fbico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07c0 6 4.39 10.97 10.13 11.87v-8.4H7.08v-3.47h3.05V9.43c0-3 1.79-4.67 4.53-4.67 1.31 0 2.69.24 2.69.24v2.95h-1.52c-1.49 0-1.96.93-1.96 1.88v2.25h3.33l-.53 3.47h-2.8v8.4C19.61 23.04 24 18.07 24 12.07z"/></svg></span>Reportes Facebook</span>
+            <span class="fbr-vsep"></span>
+            <span class="fbr-sticky-text" id="fb-sticky-period"></span>
+            <span class="fbr-vsep"></span>
+            <span class="fbr-sticky-text" id="fb-sticky-area">Todas las áreas</span>
+            <span class="fbr-grow"></span>
+            <span class="fbr-chip" id="fb-sticky-chip"></span>
           </div>
         </div>
 
-        <!-- Elementos técnicos ocultos conservados para lógica interna y tests -->
-        <p id="fb-report-period" hidden style="display:none;"></p>
-
-        <!-- Estado visual / Figura para Rango Personalizado antes de consultar -->
-        <div id="fb-report-custom-placeholder" class="fb-report-custom-placeholder" hidden>
-          <div class="fb-placeholder-card">
-            <div class="fb-placeholder-visual">
-              <svg class="fb-placeholder-svg" viewBox="0 0 540 330" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <defs>
-                  <linearGradient id="ph-grad-primary" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#4338ca"/></linearGradient>
-                  <linearGradient id="ph-grad-blue" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#2563eb"/></linearGradient>
-                  <linearGradient id="ph-grad-emerald" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#059669"/></linearGradient>
-                  <linearGradient id="ph-grad-rose" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fb7185"/><stop offset="100%" stop-color="#e11d48"/></linearGradient>
-                  <linearGradient id="ph-grad-amber" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#d97706"/></linearGradient>
-                  <linearGradient id="ph-card-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#f8fafc"/></linearGradient>
-                  <linearGradient id="ph-chart-glow" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6366f1" stop-opacity="0.25"/><stop offset="100%" stop-color="#6366f1" stop-opacity="0"/></linearGradient>
-                  <filter id="ph-shadow" x="-10%" y="-10%" width="130%" height="130%"><feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.08"/><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.03"/></filter>
-                  <filter id="ph-sub-shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0f172a" flood-opacity="0.07"/></filter>
-                </defs>
-
-                <!-- Fondo ambiental suave -->
-                <circle cx="270" cy="165" r="140" fill="#eff6ff" opacity="0.6"/>
-                <circle cx="120" cy="90" r="70" fill="#f5f3ff" opacity="0.7"/>
-                <circle cx="430" cy="220" r="80" fill="#ecfdf5" opacity="0.6"/>
-
-                <!-- Partículas decorativas -->
-                <circle cx="85" cy="45" r="3" fill="#818cf8"/>
-                <circle cx="475" cy="55" r="2.5" fill="#38bdf8"/>
-                <circle cx="490" cy="180" r="3.5" fill="#34d399"/>
-                <circle cx="65" cy="260" r="3" fill="#f43f5e"/>
-
-                <!-- Tablero Central (Mockup de Reportes de Facebook) -->
-                <rect x="95" y="30" width="350" height="210" rx="18" fill="url(#ph-card-bg)" stroke="#e2e8f0" stroke-width="1.5" filter="url(#ph-shadow)"/>
-                
-                <!-- Barra superior de ventana -->
-                <line x1="95" y1="65" x2="445" y2="65" stroke="#f1f5f9" stroke-width="1.5"/>
-                <circle cx="116" cy="48" r="4" fill="#f87171"/>
-                <circle cx="129" cy="48" r="4" fill="#fbbf24"/>
-                <circle cx="142" cy="48" r="4" fill="#34d399"/>
-
-                <!-- Badge Oficial Facebook -->
-                <rect x="162" y="38" width="20" height="20" rx="5" fill="#1877f2"/>
-                <path d="M174.5 48h-2.5v7h-3v-7h-1.5v-2.5h1.5v-1.8c0-2.1 1.2-3.2 3.1-3.2.9 0 1.7.1 1.9.1v2.2h-1.3c-1 0-1.2.5-1.2 1.2v1.5h2.5l-.5 2.5z" fill="#ffffff"/>
-                <text id="ph-svg-title" x="190" y="52" fill="#334155" font-size="11" font-weight="700" font-family="system-ui, sans-serif">Publicaciones &amp; Evidencias</text>
-                
-                <!-- Gráfico de barras de cumplimiento -->
-                <path d="M125 185 Q 170 140, 215 155 T 305 110 T 395 130 L 395 190 L 125 190 Z" fill="url(#ph-chart-glow)"/>
-                <line x1="120" y1="190" x2="420" y2="190" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3 3"/>
-                
-                <!-- Columnas de métricas diarias -->
-                <rect x="140" y="145" width="22" height="45" rx="6" fill="url(#ph-grad-primary)"/>
-                <rect x="195" y="115" width="22" height="75" rx="6" fill="url(#ph-grad-blue)"/>
-                <rect x="250" y="90" width="22" height="100" rx="6" fill="url(#ph-grad-emerald)"/>
-                <rect x="305" y="125" width="22" height="65" rx="6" fill="url(#ph-grad-amber)"/>
-                <rect x="360" y="105" width="22" height="85" rx="6" fill="url(#ph-grad-rose)"/>
-
-                <!-- Línea de tendencia suave -->
-                <path d="M151 140 C 180 100, 220 120, 261 85 C 290 120, 335 95, 371 100" stroke="#6366f1" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                <circle cx="261" cy="85" r="4.5" fill="#ffffff" stroke="#6366f1" stroke-width="3"/>
-                <circle cx="371" cy="100" r="4" fill="#ffffff" stroke="#e11d48" stroke-width="2.5"/>
-
-                <!-- Tarjeta Flotante Izquierda: Colaboradores & Sí/No -->
-                <g filter="url(#ph-sub-shadow)">
-                  <rect x="18" y="90" width="148" height="135" rx="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
-                  <text x="32" y="112" fill="#1e293b" font-size="10.5" font-weight="700" font-family="system-ui, sans-serif">Colaboradores (36)</text>
-                  <!-- Fila 1 -->
-                  <circle cx="42" cy="132" r="8" fill="#e0e7ff"/>
-                  <rect x="56" y="129" width="46" height="6" rx="3" fill="#cbd5e1"/>
-                  <rect x="110" y="124" width="36" height="16" rx="8" fill="#ecfdf5"/>
-                  <text x="128" y="136" text-anchor="middle" fill="#059669" font-size="9" font-weight="700" font-family="system-ui, sans-serif">✓ Sí</text>
-                  <!-- Fila 2 -->
-                  <circle cx="42" cy="158" r="8" fill="#fce7f3"/>
-                  <rect x="56" y="155" width="42" height="6" rx="3" fill="#cbd5e1"/>
-                  <rect x="110" y="150" width="36" height="16" rx="8" fill="#ecfdf5"/>
-                  <text x="128" y="162" text-anchor="middle" fill="#059669" font-size="9" font-weight="700" font-family="system-ui, sans-serif">✓ Sí</text>
-                  <!-- Fila 3 -->
-                  <circle cx="42" cy="184" r="8" fill="#fee2e2"/>
-                  <rect x="56" y="181" width="38" height="6" rx="3" fill="#cbd5e1"/>
-                  <rect x="110" y="176" width="36" height="16" rx="8" fill="#fff1f2"/>
-                  <text x="128" y="188" text-anchor="middle" fill="#e11d48" font-size="9" font-weight="700" font-family="system-ui, sans-serif">✕ No</text>
-                </g>
-
-                <!-- Tarjeta Flotante Derecha: Medidor de Cumplimiento -->
-                <g filter="url(#ph-sub-shadow)">
-                  <rect x="376" y="80" width="144" height="135" rx="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
-                  <text x="390" y="102" fill="#1e293b" font-size="10.5" font-weight="700" font-family="system-ui, sans-serif">% Cumplimiento</text>
-                  <!-- Aro donante -->
-                  <circle cx="448" cy="142" r="28" stroke="#f1f5f9" stroke-width="6.5" fill="none"/>
-                  <circle cx="448" cy="142" r="28" stroke="url(#ph-grad-emerald)" stroke-width="6.5" fill="none" stroke-dasharray="148 176" stroke-linecap="round" transform="rotate(-90 448 142)"/>
-                  <text x="448" y="146" text-anchor="middle" fill="#0f172a" font-size="13" font-weight="800" font-family="system-ui, sans-serif">88%</text>
-                  <rect x="408" y="182" width="80" height="18" rx="9" fill="#ecfdf5"/>
-                  <text x="448" y="194.5" text-anchor="middle" fill="#047857" font-size="9.5" font-weight="700" font-family="system-ui, sans-serif">Excelente nivel</text>
-                </g>
-
-                <!-- Cinta Inferior de Rango de Fechas (Timeline) -->
-                <g filter="url(#ph-sub-shadow)">
-                  <rect x="105" y="260" width="330" height="42" rx="21" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-                  <circle cx="132" cy="281" r="12" fill="#eff6ff"/>
-                  <path d="M128 277h8v8h-8z M134 275v3 M130 275v3" stroke="#2563eb" stroke-width="1.2" fill="none"/>
-                  <text x="150" y="284.5" fill="#1e293b" font-size="10.5" font-weight="700" font-family="system-ui, sans-serif">Desde</text>
-                  
-                  <line x1="188" y1="281" x2="310" y2="281" stroke="#6366f1" stroke-width="2" stroke-dasharray="4 4"/>
-                  <polygon points="310,277 318,281 310,285" fill="#6366f1"/>
-                  
-                  <circle cx="340" cy="281" r="12" fill="#f5f3ff"/>
-                  <path d="M336 277h8v8h-8z M342 275v3 M338 275v3" stroke="#7c3aed" stroke-width="1.2" fill="none"/>
-                  <text x="358" y="284.5" fill="#1e293b" font-size="10.5" font-weight="700" font-family="system-ui, sans-serif">Hasta</text>
-                </g>
-
-                <!-- Lupa de Búsqueda Moderna flotando en ángulo -->
-                <g filter="url(#ph-sub-shadow)">
-                  <circle cx="335" cy="46" r="22" fill="rgba(238, 242, 255, 0.75)" stroke="#6366f1" stroke-width="3"/>
-                  <line x1="351" y1="62" x2="368" y2="79" stroke="#4f46e5" stroke-width="4.5" stroke-linecap="round"/>
-                  <path d="M324 38 A 12 12 0 0 1 338 34" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-                </g>
-              </svg>
+        <header class="fbr-card fbr-head" id="fb-report-head">
+          <div class="fbr-head-row">
+            <div class="fbr-id">
+              <span class="fbr-fbico fbr-fbico-lg"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07c0 6 4.39 10.97 10.13 11.87v-8.4H7.08v-3.47h3.05V9.43c0-3 1.79-4.67 4.53-4.67 1.31 0 2.69.24 2.69.24v2.95h-1.52c-1.49 0-1.96.93-1.96 1.88v2.25h3.33l-.53 3.47h-2.8v8.4C19.61 23.04 24 18.07 24 12.07z"/></svg></span>
+              <div>
+                <h2 id="fb-report-title">Reportes Facebook</h2>
+                <p class="fbr-period" id="fb-report-period-line"></p>
+              </div>
             </div>
-
-            <div class="fb-placeholder-content">
-              <div class="fb-ph-tag">
-                <span class="fb-ph-tag-pulse"></span>
-                <span id="fb-placeholder-tag-text">Corte seleccionado</span>
-              </div>
-              <h3 class="fb-ph-title" id="fb-placeholder-title">Reporte de Publicaciones</h3>
-              <p class="fb-ph-desc" id="fb-placeholder-desc">
-                Confirma las fechas en el formulario y haz clic en <strong>Consultar reporte</strong> para procesar las evidencias de Facebook, asistencias y métricas por área.
-              </p>
-
-              <!-- Chip con rango interactivo -->
-              <div class="fb-ph-range-row" id="fb-placeholder-range-row">
-                <div class="fb-ph-range-box" id="fb-placeholder-ref-box" style="display:none;">
-                  <span class="fb-ph-lbl">FECHA REPORTE</span>
-                  <span class="fb-ph-val" id="fb-placeholder-ref-preview">--/--/----</span>
-                </div>
-                <div class="fb-ph-range-divider" id="fb-placeholder-ref-divider" style="display:none;"></div>
-                <div class="fb-ph-range-box">
-                  <span class="fb-ph-lbl">DESDE</span>
-                  <span class="fb-ph-val" id="fb-placeholder-from-preview">--/--/----</span>
-                </div>
-                <div class="fb-ph-range-arrow" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                </div>
-                <div class="fb-ph-range-box">
-                  <span class="fb-ph-lbl">HASTA</span>
-                  <span class="fb-ph-val" id="fb-placeholder-to-preview">--/--/----</span>
+            <div class="fbr-head-meta">
+              <span class="fbr-chip" id="fb-report-state" hidden></span>
+              <p id="fb-report-status" class="fbr-status" role="status" aria-live="polite"></p>
+              <div class="fbr-pop-wrap">
+                <button type="button" class="fbr-btn fbr-btn-ghost" id="fb-report-help-btn" aria-expanded="false" aria-controls="fb-report-help">
+                  <svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Cómo se calcula
+                </button>
+                <div class="fbr-pop fbr-help" id="fb-report-help" role="dialog" aria-labelledby="fb-report-help-title" hidden>
+                  <b id="fb-report-help-title"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Cómo se calcula</b>
+                  <ul>
+                    <li><b>Sí:</b> hay una entrega de Facebook registrada ese día. Incluye las evidencias pendientes de revisión u observadas. Varias imágenes cuentan como un solo Sí.</li>
+                    <li><b>No:</b> no hay evidencia al consultar. No confirma que la persona no haya compartido fuera del sistema. «En plazo» indica una franja aún abierta y cuenta como No.</li>
+                    <li><b>Cumplimiento</b> = Sí ÷ (Sí + No). Los días que no aplican no suman.</li>
+                    <li><b>Nivel:</b> Excelente desde 80 % · Regular de 50 a 79 % · Bajo menos de 50 %.</li>
+                    <li><b>No aplica:</b> «No comparte ese día», «Sistema aún no activo», «Aún no incorporado» y «Falta fecha de ingreso» explican por qué no se evalúa esa fecha. «Sin información» indica que falta el registro del reporte.</li>
+                  </ul>
+                  <p>Se usa el equipo activo con sus áreas y horarios actuales; los cambios pueden alterar reportes anteriores.</p>
                 </div>
               </div>
-
-              <!-- Puntos clave del reporte que se va a buscar -->
-              <div class="fb-ph-features">
-                <div class="fb-ph-feature-pill">
-                  <span class="fb-ph-ico fb-ph-ico-blue">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                  </span>
-                  <span id="fb-placeholder-pill-1">Evaluación de colaboradores</span>
-                </div>
-                <div class="fb-ph-feature-pill">
-                  <span class="fb-ph-ico fb-ph-ico-green">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                  </span>
-                  <span id="fb-placeholder-pill-2">Evidencias Sí / No y capturas</span>
-                </div>
-                <div class="fb-ph-feature-pill">
-                  <span class="fb-ph-ico fb-ph-ico-purple">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                  </span>
-                  <span id="fb-placeholder-pill-3">Matriz de 9 áreas y descargas</span>
+              <div class="fbr-pop-wrap">
+                <button type="button" class="fbr-btn fbr-btn-ghost" id="fb-report-download" aria-haspopup="menu" aria-expanded="false" aria-controls="fb-report-download-menu" disabled>
+                  <svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg><span id="fb-report-download-label">Descargar</span><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="fbr-pop fbr-menu" id="fb-report-download-menu" role="menu" aria-label="Descargas" hidden>
+                  <button type="button" role="menuitem" class="fbr-mi" id="fb-report-export" disabled>
+                    <span class="fbr-mi-ic is-sheet"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M8 13h8M8 17h8M12 11v8"/></svg></span>
+                    <span><b id="fb-report-export-title">Excel · vista por área</b><small id="fb-report-export-desc">Hojas Por área, Por persona y Revisión diaria.</small></span>
+                  </button>
+                  <button type="button" role="menuitem" class="fbr-mi" id="fb-report-pdf" disabled>
+                    <span class="fbr-mi-ic is-pdf"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M10 9H8M16 13H8M16 17H8"/></svg></span>
+                    <span><b id="fb-report-pdf-label">PDF completo</b><small id="fb-report-pdf-help">Todas las áreas del período y ranking final, aunque haya un área filtrada.</small></span>
+                  </button>
+                  <p class="fbr-menu-foot"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Se genera en tu navegador; no se envía a terceros.</p>
                 </div>
               </div>
-
-              <!-- Botón directo de acción -->
-              <button type="button" class="fb-ph-cta-btn" id="fb-placeholder-cta">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                <span id="fb-placeholder-cta-label">Consultar reporte</span>
-              </button>
             </div>
           </div>
+
+          <form id="fb-report-form" class="fbr-filters" novalidate>
+            <div class="fbr-seg" id="fb-report-kinds" role="radiogroup" aria-label="Tipo de reporte">
+              <button type="button" role="radio" data-kind="lunes" aria-checked="false">Corte lunes</button>
+              <button type="button" role="radio" data-kind="jueves" aria-checked="false">Corte jueves</button>
+              <button type="button" role="radio" data-kind="general" aria-checked="false">Mes</button>
+              <button type="button" role="radio" data-kind="custom" aria-checked="false">Personalizado</button>
+            </div>
+            <select id="fb-report-kind" hidden aria-hidden="true" tabindex="-1">
+              <option value="lunes">Corte lunes · jueves a domingo</option>
+              <option value="jueves">Corte jueves · lunes a miércoles</option>
+              <option value="general">Mes</option>
+              <option value="custom">Rango personalizado</option>
+            </select>
+            <input type="date" id="fb-report-reference" hidden>
+            <input type="date" id="fb-report-from" hidden>
+            <input type="date" id="fb-report-to" hidden>
+
+            <div class="fbr-pop-wrap">
+              <div class="fbr-stepper" id="fb-report-stepper">
+                <button type="button" class="fbr-step" id="fb-report-prev" aria-label="Período anterior"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+                <button type="button" class="fbr-step-value" id="fb-report-pick" aria-haspopup="dialog" aria-expanded="false" aria-controls="fb-calendar-popover">
+                  <svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span id="fb-report-pick-label"></span><small id="fb-report-pick-hint"></small>
+                </button>
+                <button type="button" class="fbr-step" id="fb-report-next" aria-label="Período siguiente"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+              </div>
+
+              <div id="fb-calendar-popover" class="fbr-pop fbr-cal" role="dialog" aria-label="Elegir fechas" hidden>
+                <div class="fbr-cal-presets" id="fb-cal-presets">
+                  <button type="button" data-preset="7">Últimos 7 días</button>
+                  <button type="button" data-preset="14">Últimos 14 días</button>
+                  <button type="button" data-preset="21">Últimos 21 días</button>
+                  <button type="button" data-preset="month">Mes anterior</button>
+                  <button type="button" data-preset="90">Últimos 90 días</button>
+                </div>
+                <div class="fbr-cal-main">
+                  <div class="fbr-cal-head">
+                    <button type="button" class="fbr-cal-nav" id="fb-cal-prev" aria-label="Mes anterior"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+                    <b id="fb-cal-month-year"></b>
+                    <button type="button" class="fbr-cal-nav" id="fb-cal-next" aria-label="Mes siguiente"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+                  </div>
+                  <div class="fbr-cal-week" aria-hidden="true"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+                  <div class="fbr-cal-days" id="fb-cal-days-grid"></div>
+                  <div class="fbr-cal-foot">
+                    <span id="fb-cal-summary"></span>
+                    <button type="button" class="fbr-btn fbr-btn-primary fbr-btn-sm" id="fb-cal-apply">Aplicar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <label class="fbr-select" for="fb-report-area"><span>Área:</span><select id="fb-report-area"><option value="">Todas las áreas</option></select><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></label>
+            <span class="fbr-grow"></span>
+            <span class="fbr-hint"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/></svg>Se actualiza al cambiar cualquier filtro</span>
+          </form>
+        </header>
+
+        <!-- Estados sin resultados: rango por elegir o error de consulta -->
+        <div id="fb-report-empty" class="fbr-card fbr-state" hidden>
+          <span class="fbr-state-ic" id="fb-report-empty-icon" aria-hidden="true"></span>
+          <b id="fb-report-empty-title"></b>
+          <p id="fb-report-empty-desc"></p>
+          <button type="button" class="fbr-btn fbr-btn-primary fbr-btn-sm" id="fb-report-empty-action" hidden></button>
         </div>
 
         <div id="fb-report-results" hidden>
-          <p id="fb-report-scope" class="fb-report-note" hidden style="display:none;"></p>
+          <div id="fb-report-scope" class="fbr-banner is-info" hidden></div>
+          <div id="fb-report-kpis" class="fbr-kpis" aria-label="Indicadores del período"></div>
 
-          <!-- Tarjetas KPI de resumen ejecutivo (Estilo Fitness Dashboard) -->
-          <div class="fb-report-kpis" id="fb-report-kpis" aria-label="Métricas clave de publicaciones"></div>
-
-          <!-- Barra de herramientas: Vista por área / Vista por persona y filtros -->
-          <div class="fb-report-toolbar">
-            <div class="fb-report-view-toggle" role="tablist" aria-label="Modo de reporte">
-              <button type="button" class="fb-view-btn active" id="fb-btn-view-area" role="tab" aria-selected="true">
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                Vista por área
-              </button>
-              <button type="button" class="fb-view-btn" id="fb-btn-view-person" role="tab" aria-selected="false">
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                Vista por persona
-              </button>
-            </div>
-            <div class="fb-report-toolbar-filters">
-              <div class="fb-toolbar-area-field">
-                <label for="fb-report-area">Área</label>
-                <div class="fb-select-box fb-toolbar-select">
-                  <select id="fb-report-area"><option value="">Todas las áreas</option></select>
-                  <svg class="fb-select-arrow" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          <div class="fbr-split" id="fb-report-split">
+            <div class="fbr-card fbr-tcard">
+              <div class="fbr-thead-bar">
+                <div class="fbr-tabs" role="tablist" aria-label="Vista del reporte">
+                  <button type="button" role="tab" id="fb-btn-view-area" aria-controls="fb-report-matrix" aria-selected="true"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Por área</button>
+                  <button type="button" role="tab" id="fb-btn-view-person" aria-controls="fb-report-person-view" aria-selected="false"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Por persona</button>
                 </div>
+                <label class="fbr-search" id="fb-report-search-wrap" hidden><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="search" id="fb-report-search" placeholder="Buscar colaborador…" aria-label="Buscar colaborador o área"></label>
+                <div class="fbr-fchips" id="fb-report-person-filters" role="group" aria-label="Filtrar personas" hidden></div>
+                <div class="fbr-legend" id="fb-report-legend" hidden>
+                  <span><i class="fbr-mini is-yes">✓</i>Sí</span><span><i class="fbr-mini is-no">✕</i>No</span><span><i class="fbr-mini is-na"></i>No comparte ese día</span><span><i class="fbr-mini is-out"></i>Aún no incorporado</span>
+                </div>
+                <span class="fbr-grow"></span>
+                <span class="fbr-hint" id="fb-report-table-hint">Clic en un área para ver el detalle diario</span>
+                <button type="button" class="fbr-btn fbr-btn-ghost fbr-btn-sm" id="fb-report-sort"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 16 4 4 4-4M7 20V4M21 8l-4-4-4 4M17 4v16"/></svg><span id="fb-report-sort-label">Mayor cumplimiento</span></button>
               </div>
-              <label class="fb-report-search" id="fb-report-search-wrap" hidden>Buscar colaborador<input type="search" id="fb-report-search" placeholder="Escribe un nombre…" aria-label="Buscar colaborador"></label>
+              <div id="fb-report-matrix" class="fbr-pane" role="tabpanel" aria-labelledby="fb-btn-view-area"></div>
+              <div id="fb-report-person-view" class="fbr-pane" role="tabpanel" aria-labelledby="fb-btn-view-person" hidden></div>
             </div>
+            <aside class="fbr-card fbr-att" id="fb-report-attention" aria-label="Requieren atención"></aside>
           </div>
-
-          <!-- Vista 1: Por Área (Resumen ejecutivo y matriz) -->
-          <div id="fb-report-area-summary" class="fb-report-view-pane active"></div>
-          <div id="fb-report-matrix" class="fb-report-view-pane active"></div>
-
-          <!-- Vista 2: Por Persona (Consolidado general) -->
-          <div id="fb-report-person-view" class="fb-report-view-pane" hidden></div>
-
-          <details class="fb-report-note"><summary>Criterios del reporte</summary><p>“Sí” incluye evidencias pendientes de revisión u observadas. “No” no confirma que la persona no haya compartido fuera del sistema. “No comparte ese día”, “Sistema aún no activo”, “Aún no incorporado” y “Falta fecha de ingreso” explican por qué no se evalúa esa fecha y no suman al total. “Sin información” indica que falta el registro del reporte. Se usa el equipo activo y sus áreas y horarios actuales; los cambios pueden alterar reportes anteriores.</p></details>
         </div>
+
+        <!-- Panel lateral de evidencia: la tabla sigue visible -->
+        <aside id="fb-evidence-drawer" class="fbr-drawer" role="dialog" aria-modal="false" aria-labelledby="fb-evidence-name" hidden>
+          <header class="fbr-drawer-head">
+            <div class="fbr-drawer-kicker"><span>Evidencia de Facebook</span><button type="button" class="fbr-icon-btn" id="fb-evidence-close" aria-label="Cerrar panel de evidencia"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+            <h3 id="fb-evidence-name"></h3>
+            <p id="fb-evidence-meta"></p>
+            <div class="fbr-drawer-chips" id="fb-evidence-chips"></div>
+          </header>
+          <div class="fbr-drawer-body">
+            <div class="fbr-drawer-days">
+              <p class="fbr-label" id="fb-evidence-days-title">Sus días en este período</p>
+              <div class="fbr-strip" id="fb-evidence-strip" role="group" aria-labelledby="fb-evidence-days-title"></div>
+            </div>
+            <section id="fb-evidence-detail" class="fbr-evidence-detail" aria-label="Evidencias de Facebook del día" aria-live="polite"></section>
+          </div>
+          <footer class="fbr-drawer-foot">
+            <span class="fbr-kbd"><kbd>←</kbd><kbd>→</kbd> días · <kbd>↑</kbd><kbd>↓</kbd> personas · <kbd>Esc</kbd> cerrar</span>
+            <span class="fbr-drawer-nav">
+              <button type="button" class="fbr-btn fbr-btn-ghost fbr-btn-sm" id="fb-evidence-prev" aria-label="Día anterior"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+              <button type="button" class="fbr-btn fbr-btn-ghost fbr-btn-sm" id="fb-evidence-next" aria-label="Día siguiente"><svg class="fbr-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+            </span>
+          </footer>
+        </aside>
       </section>
 
       <section id="admin-ranking-section" hidden aria-labelledby="ranking-title">
@@ -4051,7 +3871,7 @@
 </dialog>
 
 <script src="assets/js/dashboard-holiday.js?v=1"></script>
-<script src="assets/js/dashboard-skeleton.js?v=6"></script>
+<script src="assets/js/dashboard-skeleton.js?v=7"></script>
 <script src="assets/js/reclutamiento-api.js?v=1"></script>
 <script src="assets/js/dashboard-avatar.js?v=3"></script>
 <script src="assets/js/dashboard.js?v=278"></script>
@@ -4084,7 +3904,7 @@
 <script src="assets/js/dashboard-attendance-preview.js?v=3"></script>
 <script src="assets/js/dashboard-month-day-detail.js?v=11"></script>
 <script src="assets/js/dashboard-days-off-planner.js?v=1"></script>
-<script src="assets/js/dashboard-admin-mes.js?v=23"></script>
+<script src="assets/js/dashboard-admin-mes.js?v=24"></script>
 <script src="assets/js/dashboard-admin-acceso.js?v=7"></script>
 <script src="assets/js/dashboard-admin-roles.js?v=13"></script>
 <script src="assets/js/dashboard-admin-cierre.js?v=58"></script>
@@ -4130,7 +3950,7 @@
 <script src="assets/js/attendance-report-excel-layout.js?v=5"></script>
 <script src="assets/js/intern-report-excel.js?v=8"></script>
 <script src="assets/js/facebook-report-pdf.js?v=1"></script>
-<script src="assets/js/dashboard-facebook-report.js?v=10"></script>
+<script src="assets/js/dashboard-facebook-report.js?v=11"></script>
 <script src="assets/js/dashboard-pausa-activa.js?v=sondeo-60-1"></script>
 <script src="assets/js/dashboard-guided-tour.js?v=9"></script>
     <script defer src="assets/js/comunicado-modal.js?v=20261026-1"></script>
