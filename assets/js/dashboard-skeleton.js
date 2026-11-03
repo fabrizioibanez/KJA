@@ -92,9 +92,9 @@
       fillMirrorSlot(clone,'ranking-results',table(7,5,true));
     }else if(kind==='facebook'){
       const results=clone.querySelector('#fb-report-results');if(results)results.hidden=false;
-      fillMirrorSlot(clone,'fb-report-kpis',metrics(4),{reveal:true});
-      fillMirrorSlot(clone,'fb-report-area-summary',panel(4,false),{reveal:true});
+      fillMirrorSlot(clone,'fb-report-kpis',`${panel(1,false)}${metrics(4)}${chart()}`,{reveal:true});
       fillMirrorSlot(clone,'fb-report-matrix',table(7,6,true),{reveal:true});
+      fillMirrorSlot(clone,'fb-report-attention',panel(5,true),{reveal:true});
     }else if(kind==='lista'){
       fillMirrorSlot(clone,'admin-date-strip',dayStrip());
       fillMirrorSlot(clone,'admin-list-kpis',nativeMetrics(5));

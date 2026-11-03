@@ -305,14 +305,6 @@ function findMonthCell(personId,date){
   const person=(APP.adminMonth?.personas||[]).find(item=>String(item.id)===String(personId));
   return {person,day:(person?.dias||[]).find(item=>item.fecha===date)};
 }
-function openFacebookReportEvidence(person,date){
-  if(APP.access?.rol!=='direccion')return;
-  ADMIN_MONTH_DIALOG={kind:'facebook-report',personId:String(person.id),date};
-  openMonthModal('EVIDENCIAS DE FACEBOOK',person.nombre,new Date(date+'T12:00:00').toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}),
-    '<section id="facebook-report-day-detail" aria-label="Evidencias de Facebook del día" aria-live="polite"></section>');
-  $('admin-month-modal').classList.add('month-detail-modal');
-  $('admin-month-modal')._dayDetail=KJAMonthDayDetail.mount($('facebook-report-day-detail'),{person,day:{fecha:date,laborable:true},facebookOnly:true});
-}
 async function loadMonthIncompleteReasons(dialog){
   const container=$('month-incomplete-reasons');
   if(!container)return;

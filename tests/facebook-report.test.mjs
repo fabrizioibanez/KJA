@@ -74,32 +74,33 @@ function fixture(rpc){
   return {ctx,get,downloads,media};
 }
 const response={desde:'2026-09-10',hasta:'2026-09-13',inicio_sistema:'2026-09-07',habilitado:true,generado_at:'2026-09-16T15:00:00Z',filas:[{id:1,nombre:'Ana',area:'Diseño',fecha:'2026-09-10',estado:'con_evidencia',revision:'pendiente',capturas:3},{id:2,nombre:'Juan',area:'Salud',fecha:'2026-09-10',estado:'sin_evidencia',capturas:0}]};
-test('Wednesday defaults to Thursday 17, includes today and groups the result by area',async()=>{
+const find=(node,cls)=>[...(String(node.className||'').split(/\s+/).includes(cls)?[node]:[]),...(node.children||[]).flatMap(child=>find(child,cls))];
+const areaNames=matrix=>find(matrix,'fbr-area-row').map(row=>find(row,'fbr-area-name')[0].textContent);
+test('Wednesday defaults to Thursday 17, includes today and lists each area as a row that opens in place',async()=>{
   const calls=[];const {ctx,get}=fixture(async(name,args)=>{calls.push({name,args});return {data:response};});
   await ctx.loadAdminFacebookReport();assert.equal(calls[0].name,'dash_reporte_facebook');assert.equal(calls[0].args.p_desde,'2026-09-14');assert.equal(calls[0].args.p_hasta,'2026-09-16');
   assert.equal(get('fb-report-reference').value,'2026-09-17');assert.equal(get('fb-report-reference').max,'2026-09-17');
   const matrix=get('fb-report-matrix');
-  assert.equal(get('fb-report-results').hidden,false);assert.equal(get('fb-report-export').disabled,false);assert.equal(matrix.children.length,2);
-  assert.equal(matrix.children[0].children[0].open,true);assert.equal(matrix.children[1].children[0].open,false);
-  get('fb-report-area').value='Diseño';get('fb-report-area').onchange();assert.equal(matrix.children.length,1);assert.equal(matrix.dataset.singleArea,'true');
-  const summary=matrix.children[0].children[0].children[0];
-  assert.equal(summary.children[0].textContent,'Diseño');assert.equal(summary.children[1].textContent,' · 1 persona');
+  assert.equal(get('fb-report-results').hidden,false);assert.equal(get('fb-report-export').disabled,false);
+  assert.deepEqual(areaNames(matrix),['Diseño','Salud']);
+  assert.deepEqual(find(matrix,'fbr-drill').map(row=>row.hidden),[true,true]);
+  find(matrix,'fbr-area-row')[1].onclick();
+  assert.deepEqual(find(matrix,'fbr-drill').map(row=>row.hidden),[true,false]);
+  get('fb-report-area').value='Diseño';get('fb-report-area').onchange();
+  assert.deepEqual(areaNames(matrix),['Diseño']);assert.equal(matrix.dataset.singleArea,'true');
+  assert.deepEqual(find(matrix,'fbr-drill').map(row=>row.hidden),[false]);
 });
-test('desktop areas alternate into independent stacks and resize in report order without closing them',async()=>{
+test('area rows keep their open state when the table is sorted again',async()=>{
   const third={id:3,nombre:'Eva',area:'Ingeniería',fecha:'2026-09-10',estado:'con_evidencia',revision:'aprobada',capturas:1};
-  const {ctx,get,media}=fixture(async()=>({data:{...response,filas:[...response.filas,third]}}));
+  const {ctx,get}=fixture(async()=>({data:{...response,filas:[...response.filas,third]}}));
   await ctx.loadAdminFacebookReport();
-  const matrix=get('fb-report-matrix'),name=section=>section.children[0].children[0].textContent;
-  assert.deepEqual(matrix.children.map(column=>column.children.map(name)),[['Diseño','Salud'],['Ingeniería']]);
-  const [design,health]=matrix.children[0].children,engineering=matrix.children[1].children[0];
-  health.open=true;engineering.open=true;
-  media.matches=true;media.listener({matches:true});
-  assert.deepEqual(matrix.children.map(name),['Diseño','Ingeniería','Salud']);
-  assert.deepEqual(matrix.children.map(section=>section.open),[true,true,true]);
-  media.matches=false;media.listener({matches:false});
-  assert.deepEqual(matrix.children.map(column=>column.children.map(name)),[['Diseño','Salud'],['Ingeniería']]);
-  assert.equal(matrix.children[0].children[0],design);assert.equal(matrix.children[0].children[1],health);assert.equal(matrix.children[1].children[0],engineering);
-  assert.deepEqual([design.open,health.open,engineering.open],[true,true,true]);
+  const matrix=get('fb-report-matrix');
+  assert.deepEqual(areaNames(matrix),['Diseño','Ingeniería','Salud']);
+  find(matrix,'fbr-area-row')[2].onclick();
+  get('fb-report-sort').onclick();
+  assert.deepEqual(areaNames(matrix),['Salud','Diseño','Ingeniería']);
+  assert.deepEqual(find(matrix,'fbr-drill').map(row=>row.hidden),[false,true,true]);
+  assert.equal(get('fb-report-sort-label').textContent,'Menor cumplimiento');
 });
 test('empty area results stay as a full-width matrix message',async()=>{
   const {ctx,get}=fixture(async()=>({data:{...response,filas:[]}}));
@@ -138,9 +139,12 @@ test('old RPC requiring yesterday explains how to enable today',async()=>{
   const {ctx,get}=fixture(async()=>({error:{message:'Selecciona hasta 93 días, como máximo hasta ayer (hora de Lima).'}}));
   await ctx.loadAdminFacebookReport();assert.match(get('fb-report-status').textContent,/migración 65/);assert.equal(get('fb-report-export').disabled,true);
 });
-test('changing dates invalidates pending results and disables export',async()=>{
-  let resolve;const {ctx,get}=fixture(()=>new Promise(r=>resolve=r));const loading=ctx.loadAdminFacebookReport();
-  get('fb-report-kind').value='jueves';get('fb-report-kind').onchange();resolve({data:response});await loading;
+test('changing the period discards a pending response and queries the new period',async()=>{
+  const pending=[];const {ctx,get}=fixture((name,args)=>new Promise(resolve=>pending.push({args,resolve})));
+  const loading=ctx.loadAdminFacebookReport();
+  get('fb-report-kind').value='lunes';get('fb-report-kind').onchange();
+  assert.equal(pending.length,2);assert.equal(pending[1].args.p_desde,'2026-09-10');assert.equal(pending[1].args.p_hasta,'2026-09-13');
+  pending[0].resolve({data:response});await loading;
   assert.equal(get('fb-report-results').hidden,true);assert.equal(get('fb-report-export').disabled,true);
 });
 test('RPC failures stay distinct from zero evidence and cannot export stale data',async()=>{
@@ -169,7 +173,7 @@ test('PDF load failure allows retry and a changed period cancels pending export'
   let resolve;ctx.KJAFacebookPDF.load=()=>new Promise(r=>resolve=r);
   const pending=get('fb-report-pdf').onclick();assert.equal(get('fb-report-pdf').disabled,true);
   get('fb-report-kind').value='lunes';get('fb-report-kind').onchange();resolve();await pending;
-  assert.equal(downloads.length,0);assert.equal(get('fb-report-pdf').disabled,true);
+  assert.equal(downloads.length,0);assert.doesNotMatch(get('fb-report-status').textContent,/PDF preparado/);
 });
 
 function unzipStored(bytes){
@@ -314,18 +318,20 @@ test('report day buttons open the exact person/date in both views and reject rev
   assert.deepEqual(opened,[{id:1,date:'2026-09-10'},{id:2,date:'2026-09-10'}]);
   get('fb-btn-view-person').click();
   const personButtons=buttons(get('fb-report-person-view'));
+  const forName=name=>personButtons.find(button=>button['aria-label'].includes(name));
   assert.equal(personButtons.length,2);
-  assert.equal(personButtons[0]['aria-haspopup'],'dialog');
-  assert.match(personButtons[0]['aria-label'],/Ana/);
-  personButtons[1].click();assert.deepEqual(opened.at(-1),{id:2,date:'2026-09-10'});
-  ctx.APP.access.rol='colaborador';personButtons[0].click();assert.equal(opened.length,3);
+  assert.equal(forName('Ana')['aria-haspopup'],'dialog');
+  forName('Juan').click();assert.deepEqual(opened.at(-1),{id:2,date:'2026-09-10'});
+  ctx.APP.access.rol='colaborador';forName('Ana').click();assert.equal(opened.length,3);
 });
 
 test('UI renders executive KPI cards and supports toggling between area and person views',async()=>{
   const {ctx,get}=fixture(async()=>({data:response}));
   await ctx.loadAdminFacebookReport();
   const kpis=get('fb-report-kpis');
-  assert.ok(kpis.children.length>=5);
+  assert.equal(find(kpis,'fbr-hero-value')[0].textContent,'50,0 %');
+  assert.match(kpis.textContent,/1 de 2/);
+  assert.equal(find(kpis,'fbr-tile').length,4);
   assert.equal(get('fb-btn-view-area').classList.contains('active'),true);
   assert.equal(get('fb-report-matrix').hidden,false);
   assert.equal(get('fb-report-person-view').hidden,true);
@@ -343,39 +349,27 @@ test('UI renders executive KPI cards and supports toggling between area and pers
   assert.ok(get('fb-report-person-view').children[0].textContent.includes('Ana'));
 });
 
-test('custom range and preset selections display visual placeholder hero until report is consulted',async()=>{
-  let calls=0;
-  const {ctx,get}=fixture(async()=>{calls++;return {data:response};});
-  // Initially on a default preset, results may be loaded
+test('custom range keeps the current results, opens the range picker and queries the applied dates',async()=>{
+  const calls=[];
+  const {ctx,get}=fixture(async(name,args)=>{calls.push(args);return {data:response};});
   await ctx.loadAdminFacebookReport();
+  get('fb-report-kind').value='custom';get('fb-report-kind').onchange();
   assert.equal(get('fb-report-results').hidden,false);
-  assert.equal(get('fb-report-custom-placeholder').hidden,true);
+  assert.equal(get('fb-calendar-popover').hidden,false);
+  assert.equal(calls.length,1);
+  get('fb-report-from').value='2026-09-01';get('fb-report-to').value='2026-09-10';get('fb-report-to').onchange();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(calls.length,2);assert.equal(calls[1].p_desde,'2026-09-01');assert.equal(calls[1].p_hasta,'2026-09-10');
+  assert.match(get('fb-report-period-line').textContent,/Rango personalizado/);
+  assert.equal(get('fb-report-results').hidden,false);
+});
 
-  // Switching to custom range reveals placeholder hero before consultation
-  get('fb-report-kind').value='custom';
-  get('fb-report-kind').onchange();
-  assert.equal(get('fb-report-results').hidden,true);
-  assert.equal(get('fb-report-custom-placeholder').hidden,false);
-  assert.ok(get('fb-placeholder-from-preview').textContent.length>0);
-  assert.ok(get('fb-placeholder-to-preview').textContent.length>0);
-
-  // Consulting report hides placeholder and shows results
+test('failed queries show a retry state instead of an empty screen',async()=>{
+  let fail=true;const {ctx,get}=fixture(async()=>fail?{error:{message:'network'}}:{data:response});
   await ctx.loadAdminFacebookReport();
-  assert.equal(get('fb-report-results').hidden,false);
-  assert.equal(get('fb-report-custom-placeholder').hidden,true);
-
-  // Switching to lunes or jueves also displays placeholder before consultation
-  get('fb-report-kind').value='lunes';
-  get('fb-report-kind').onchange();
-  assert.equal(get('fb-report-custom-placeholder').hidden,false);
-
-  get('fb-report-kind').value='jueves';
-  get('fb-report-kind').onchange();
-  assert.equal(get('fb-report-custom-placeholder').hidden,false);
-
-  // Consulting report once more hides placeholder
-  await ctx.loadAdminFacebookReport();
-  assert.equal(get('fb-report-custom-placeholder').hidden,true);
-  assert.equal(get('fb-report-results').hidden,false);
+  assert.equal(get('fb-report-empty').hidden,false);assert.equal(get('fb-report-empty').dataset.kind,'error');
+  assert.match(get('fb-report-empty-desc').textContent,/No se pudo consultar/);
+  fail=false;await get('fb-report-empty-action').onclick();
+  assert.equal(get('fb-report-empty').hidden,true);assert.equal(get('fb-report-results').hidden,false);
 });
 
