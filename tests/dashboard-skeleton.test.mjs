@@ -15,7 +15,7 @@ function setup(){
 
 test('declara un wireframe especifico para cada seccion administrativa',t=>{
   const {dom,api}=setup();t.after(()=>dom.window.close());
-  const sections={overview:'module-map',control:'control-workbench',ranking:'ranking-analytics',facebook:'facebook-results',lista:'roster',mes:'ledger',cierres:'close-grid',asignaciones:'assignment-columns',colaboradores:'export-card',contratos:'contract-caption',roles:'role-grid',marcado:'access-layout'};
+  const sections={overview:'overview-panels',control:'control-workbench',ranking:'ranking-analytics',facebook:'facebook-results',lista:'roster',mes:'ledger',cierres:'close-grid',asignaciones:'assignment-columns',colaboradores:'export-card',contratos:'contract-caption',roles:'role-grid',marcado:'access-layout'};
   for(const [section,signature] of Object.entries(sections)){
     assert.equal(typeof api.layouts[section],'function',section);
     assert.match(api.layouts[section](),/kja-sk-/);
