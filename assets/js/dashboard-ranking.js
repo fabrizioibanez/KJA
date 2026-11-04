@@ -232,6 +232,26 @@
     reason.append(el('h3','Qué limita el cumplimiento'),el('strong',weak?SHORT_LABELS[weak.key]:'Sin programación'),el('p',weak?`${weak.done} de ${weak.expected} días cumplidos (${Math.round(weak.rate)}%). Es el criterio con menor cumplimiento; revisa su desglose antes de atribuir causas.`:'No hay días programados evaluables.'));insights.append(reason);
     const review=el('article');review.append(el('h3','Antes de reconocer al equipo'),el('strong',`${summary.pending} revisiones pendientes`),el('p',`${point(summary.penalty)} puntos descontados por asignaciones incumplidas entre personas evaluables. Las evidencias sin aprobar pueden afectar RPE y Facebook.`));insights.append(review);
   }
+  /* ── V2: alimenta el diseño nuevo (dashboard-ranking-v2.js) ── */
+  let v2Rows=[];
+  function renderV2(filtered){
+    if(!window.KJARankingV2)return;
+    v2Rows=filtered;
+    const summary=model.summarize(filtered),ok=filtered.filter(r=>r.score!==null);
+    const kpis={};summary.criteria.forEach(c=>{kpis[c.key]=c.rate===null?0:c.rate});
+    const groups=new Map();
+    filtered.forEach(r=>{const k=String(r.area_id);if(!groups.has(k))groups.set(k,{name:r.area||'Sin área',rows:[]});groups.get(k).rows.push(r)});
+    const areas=[...groups.values()].map(g=>({name:g.name,avg:model.summarize(g.rows).average})).filter(a=>a.avg!==null).sort((a,b)=>b.avg-a.avg).map(a=>({name:a.name,pct:a.avg}));
+    const weak=summary.criteria.filter(c=>c.rate!==null).sort((a,b)=>a.rate-b.rate)[0];
+    window.KJARankingV2.render({
+      pending:summary.pending,kpis,areas,
+      top:ok.slice(0,10).map(r=>({id:r.colaborador_id,rank:r.rank,name:r.nombre,area:r.area||'Sin área',score:r.score,foto:r.foto_url||'',parts:CRITERION_KEYS.map(k=>r.parts[k]||0)})),
+      overall:{score:summary.average,evaluated:summary.evaluated,total:summary.count},
+      limiting:weak?{name:SHORT_LABELS[weak.key],pct:weak.rate}:null
+    });
+  }
+  document.addEventListener('rk2:select',e=>{const row=v2Rows.find(r=>String(r.colaborador_id)===String(e.detail.id));if(row)openRankingDetail(row)});
+  document.addEventListener('rk2:review',()=>{const b=document.querySelector('[data-lateral-section="facebook"]');if(b)b.click()});
   function render(page=0){
     page=Number.isInteger(page)?Math.max(0,page):0;
     const all=model.evaluate(rows,weights),area=get('ranking-area').value;
@@ -250,6 +270,7 @@
     // Sticky bar (replaces old stats cards)
     renderStickyBar(filtered,all);
     renderAnalytics(filtered);
+    renderV2(filtered);
     get('ranking-results').replaceChildren();get('ranking-leaders').replaceChildren();
     // Guide text
     get('ranking-guide').textContent=`Entrada puntual: ${weights.entrada} puntos. RPE solo en jornadas virtuales, en horario o cargado por Administración: ${weights.rpe}. Los periodos completamente presenciales reciben crédito neutral. Facebook en sus días asignados, trabajes o no: ${weights.facebook}. Salida en horario: ${weights.salida}. Se descuentan ${weights.penalizacion} puntos por asignación incumplida, hasta ${weights.tope}.`;

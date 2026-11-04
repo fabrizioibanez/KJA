@@ -24,6 +24,8 @@
 <link rel="stylesheet" href="assets/css/paginas/assignment-hours.css?v=4">
 <link rel="stylesheet" href="assets/css/paginas/dashboard-admin-layout.css?v=1">
 <link rel="stylesheet" href="assets/css/paginas/dashboard-ranking.css?v=6">
+<link rel="stylesheet" href="assets/css/paginas/dashboard-ranking-v2.css?v=2">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400..700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.js" defer></script>
 <link rel="stylesheet" href="assets/css/paginas/dashboard-pending.css?v=9">
@@ -2503,52 +2505,79 @@
         </aside>
       </section>
 
-      <section id="admin-ranking-section" hidden aria-labelledby="ranking-title">
-        <header class="ranking-header">
+      <section id="admin-ranking-section" class="rk2" hidden aria-labelledby="ranking-title">
+        <header class="rk2-head">
           <div>
-            <p class="eyebrow">RECONOCIMIENTO DEL EQUIPO <span class="ranking-beta-badge" id="ranking-month-badge">BETA</span></p>
+            <p class="rk2-eyebrow">RECONOCIMIENTO DEL EQUIPO <span class="ranking-beta-badge" id="ranking-month-badge">BETA</span></p>
             <h2 id="ranking-title">Colaborador del mes</h2>
             <p id="ranking-header-desc">Resultados provisionales · <strong>En desarrollo</strong>, los criterios pueden cambiar.</p>
           </div>
-          <div class="ranking-month-nav">
-            <button type="button" id="ranking-month-prev" class="ranking-month-nav-btn" aria-label="Mes anterior">&#8249;</button>
-            <input type="month" id="ranking-month" hidden aria-label="Mes del ranking">
-            <details class="ranking-month-picker" id="ranking-month-picker"><summary id="ranking-month-label">Seleccionar mes</summary><div class="ranking-month-popover"><div class="ranking-year-nav"><button type="button" id="ranking-year-prev" aria-label="Año anterior">‹</button><b id="ranking-picker-year"></b><button type="button" id="ranking-year-next" aria-label="Año siguiente">›</button></div><div id="ranking-month-options"></div></div></details>
-            <button type="button" id="ranking-month-next" class="ranking-month-nav-btn" aria-label="Mes siguiente" disabled>&#8250;</button>
-            <button type="button" id="ranking-month-today" class="ranking-month-today-btn">Mes actual</button>
+          <div class="rk2-filters">
+            <div class="ranking-month-nav">
+              <button type="button" id="ranking-month-prev" class="ranking-month-nav-btn" aria-label="Mes anterior">&#8249;</button>
+              <input type="month" id="ranking-month" hidden aria-label="Mes del ranking">
+              <details class="ranking-month-picker" id="ranking-month-picker"><summary id="ranking-month-label">Seleccionar mes</summary><div class="ranking-month-popover"><div class="ranking-year-nav"><button type="button" id="ranking-year-prev" aria-label="Año anterior">‹</button><b id="ranking-picker-year"></b><button type="button" id="ranking-year-next" aria-label="Año siguiente">›</button></div><div id="ranking-month-options"></div></div></details>
+              <button type="button" id="ranking-month-next" class="ranking-month-nav-btn" aria-label="Mes siguiente" disabled>&#8250;</button>
+              <button type="button" id="ranking-month-today" class="ranking-month-today-btn">Mes actual</button>
+            </div>
+            <div class="ranking-tools"><label>Área<select id="ranking-area"><option value="">Todas las áreas</option></select></label><button type="button" id="ranking-refresh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Actualizar datos</button></div>
           </div>
-        <div class="ranking-tools"><label>Área<select id="ranking-area"><option value="">Todas las áreas</option></select></label><button type="button" id="ranking-refresh">Actualizar datos</button></div>
-        <p id="ranking-status" role="status" aria-live="polite"></p>
+          <p id="ranking-status" role="status" aria-live="polite"></p>
         </header>
-        <p class="ranking-notice"><strong>ⓘ</strong> Facebook cuenta en tus días asignados aunque no trabajes. Las asignaciones incumplidas solo descuentan puntos. Dirección debe revisar evidencias pendientes antes de otorgar el reconocimiento.</p>
-        <details class="ranking-explanation">
-          <summary>¿Cómo se ganan los puntos?</summary>
-          <p id="ranking-guide">Entrada puntual, RPE válido en jornadas virtuales, comparticiones de Facebook y salida en horario.</p>
-          <p><b>El mes empieza el día 1.</b> Cada criterio compara tus días cumplidos con sus días programados desde el inicio del mes. Los nuevos participan desde su ingreso: cumplir 5 de 10 días programados da la mitad de los puntos de ese criterio. Los días previos al ingreso no se registran como faltas.</p>
-          <p><b>RPE:</b> se evalúa solo en jornadas virtuales. Debe estar aprobado, tener archivo y haberse subido dentro de la jornada; también cuenta si Administración lo cargó para esa fecha. Un periodo completamente presencial recibe crédito neutral.</p>
-          <p><b>Facebook:</b> debe tener sus evidencias completas y aprobadas para el día asignado. Se usa la agenda de comparticiones, independiente de la jornada. Los archivos pendientes de revisión u observados no suman aún.</p>
-        </details>
-        <details class="ranking-formula"><summary>Opcional: cambiar cuánto vale cada criterio</summary><p>Los cuatro máximos deben sumar 100. Por ejemplo, cumplir todos los días de Facebook suma sus 30 puntos; cumplir la mitad suma 15. Los descuentos se configuran aparte. Estos ajustes solo simulan otra fórmula en esta página.</p><form id="ranking-form"><div id="ranking-weights"></div><button type="submit">Ver resultado con estos valores</button></form></details>
 
+        <div class="rk2-alert" id="rk2-alert" hidden>
+          <span class="rk2-alert-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></span>
+          <div><h4 id="rk2-alert-title">Atención: 0 revisiones pendientes</h4><p>Las evidencias sin aprobar pueden afectar el RPE y el ranking final de este mes.</p></div>
+          <button type="button" id="rk2-alert-btn">Revisar ahora</button>
+        </div>
 
-        <details class="ranking-extra ranking-area-leaders"><summary>Líderes por área</summary><div id="ranking-leaders" class="ranking-leaders"></div></details>
-        <div class="ranking-analytics"><section id="ranking-chart" class="ranking-chart" aria-label="Comparación de puntajes"></section><div class="ranking-analytics-side"><div id="ranking-sticky-bar" class="ranking-summary-strip" aria-label="Resumen global de métricas" hidden>
-          <div class="ranking-summary-inner">
-            <div class="ranking-summary-indicators" id="ranking-sticky-indicators"></div>
-            <button class="ranking-summary-leader" id="ranking-sticky-leader" type="button" hidden aria-label="Ver detalle del líder"></button>
+        <div class="rk2-kpis" id="rk2-kpis"></div>
+
+        <div class="rk2-grid">
+          <div class="rk2-main">
+            <div class="rk2-card rk2-podium-card">
+              <div class="rk2-center"><h3>Top 3 del Equipo</h3><p>Los puntajes más altos del mes en curso</p></div>
+              <div class="rk2-podium" id="rk2-podium"></div>
+            </div>
+            <div class="rk2-card rk2-list-card">
+              <div class="rk2-list-head"><h3>Resto del Top 10</h3>
+                <div class="rk2-legend">Leyenda: <span><i class="c-en"></i> EN</span><span><i class="c-rp"></i> RP</span><span><i class="c-fb"></i> FB</span><span><i class="c-sa"></i> SA</span></div></div>
+              <div class="rk2-list" id="rk2-list"></div>
+              <div class="rk2-list-foot"><button type="button" id="rk2-full-toggle" aria-expanded="false" aria-controls="rk2-full">Ver ranking completo</button></div>
+              <div id="rk2-full" hidden><div id="ranking-results"></div><nav id="ranking-pagination" aria-label="Páginas del ranking"></nav></div>
+            </div>
           </div>
-          <span class="ranking-summary-area-label" id="ranking-sticky-area-label" hidden></span>
-        </div><section id="ranking-area-analytics" class="ranking-chart" aria-label="Cumplimiento por área"></section>        <section id="ranking-insights" aria-label="Explicación de los resultados"></section></div></div>
 
+          <aside class="rk2-side">
+            <div class="rk2-card rk2-areas">
+              <h3>Cumplimiento por Área</h3><p class="rk2-muted">Promedio de puntajes evaluables del mes.</p>
+              <div id="rk2-areas"></div>
+            </div>
+            <div class="rk2-dark">
+              <h3>LECTURA DEL MES</h3>
+              <div><b id="rk2-overall">—</b><span> / 100 ptos</span><p id="rk2-overall-note">Sin datos todavía.</p></div>
+              <div class="rk2-limit" id="rk2-limit" hidden><h4><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Límite de cumplimiento</h4><strong id="rk2-limit-name"></strong><p>Es el criterio con menor cumplimiento general. Revisa el desglose de evidencias antes de atribuir causas.</p></div>
+            </div>
+            <div class="rk2-acc">
+              <details><summary>¿Cómo se ganan los puntos?</summary>
+                <p id="ranking-guide">Entrada puntual, RPE válido en jornadas virtuales, comparticiones de Facebook y salida en horario.</p>
+                <p><b>El mes empieza el día 1.</b> Cada criterio compara tus días cumplidos con sus días programados desde el inicio del mes. Los nuevos participan desde su ingreso: cumplir 5 de 10 días programados da la mitad de los puntos de ese criterio. Los días previos al ingreso no se registran como faltas.</p>
+                <p><b>RPE:</b> se evalúa solo en jornadas virtuales. Debe estar aprobado, tener archivo y haberse subido dentro de la jornada; también cuenta si Administración lo cargó para esa fecha. Un periodo completamente presencial recibe crédito neutral.</p>
+                <p><b>Facebook:</b> debe tener sus evidencias completas y aprobadas para el día asignado. Se usa la agenda de comparticiones, independiente de la jornada. Los archivos pendientes de revisión u observados no suman aún.</p></details>
+              <details class="ranking-formula"><summary>Cambiar valor de los criterios</summary>
+                <p>Los cuatro máximos deben sumar 100. Por ejemplo, cumplir todos los días de Facebook suma sus 30 puntos; cumplir la mitad suma 15. Los descuentos se configuran aparte. Estos ajustes solo simulan otra fórmula en esta página.</p>
+                <form id="ranking-form"><div id="ranking-weights"></div><button type="submit">Ver resultado con estos valores</button></form></details>
+              <details class="ranking-footnote-wrap"><summary>Notas y limitaciones del ranking</summary>
+                <p class="ranking-footnote">Se evalúan fechas hasta ayer y solo franjas ya terminadas. Las justificaciones excluyen la jornada, pero Facebook conserva su agenda propia. Se usan el área y los horarios actuales: los cambios pueden modificar meses anteriores. No incluye cuentas inactivas. Los empates conservan la posición. Este ranking mide los cuatro requisitos indicados; no otorga puntos por horas extra ni evalúa reuniones.</p></details>
+            </div>
+          </aside>
+        </div>
 
-
-        <details class="ranking-extra ranking-directory"><summary>Ver todos los participantes y sus puntajes</summary><div id="ranking-results"></div>
-        <nav id="ranking-pagination" aria-label="Páginas del ranking"></nav>
-        </details>
-        <details class="ranking-footnote-wrap">
-          <summary>Notas y limitaciones del ranking</summary>
-          <p class="ranking-footnote">Se evalúan fechas hasta ayer y solo franjas ya terminadas. Las justificaciones excluyen la jornada, pero Facebook conserva su agenda propia. Se usan el área y los horarios actuales: los cambios pueden modificar meses anteriores. No incluye cuentas inactivas. Los empates conservan la posición. Este ranking mide los cuatro requisitos indicados; no otorga puntos por horas extra ni evalúa reuniones.</p>
-        </details>
+        <!-- Contenedores heredados (los usa dashboard-ranking.js); no se muestran -->
+        <div hidden aria-hidden="true">
+          <div id="ranking-leaders"></div><section id="ranking-chart"></section><section id="ranking-area-analytics"></section><section id="ranking-insights"></section>
+          <div id="ranking-sticky-bar"><div id="ranking-sticky-indicators"></div><button id="ranking-sticky-leader" type="button"></button><span id="ranking-sticky-area-label"></span></div>
+        </div>
       </section>
 
       <!-- ── Modal de detalle de participante (Ranking) ──────── -->
@@ -3943,7 +3972,8 @@
 <script src="assets/js/dashboard-chat.js?v=25"></script>
 <script src="assets/js/dashboard-mobile.js?v=5"></script>
 <script src="assets/js/ranking-model.js?v=6"></script>
-<script src="assets/js/dashboard-ranking.js?v=15"></script>
+<script src="assets/js/dashboard-ranking.js?v=16"></script>
+<script src="assets/js/dashboard-ranking-v2.js?v=2"></script>
 <script src="assets/js/facebook-report-model.js?v=5"></script>
 <script src="assets/js/facebook-report-excel-layout.js?v=2"></script>
 <script src="assets/js/facebook-report-excel.js?v=4"></script>
